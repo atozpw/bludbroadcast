@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>BLUD Cimahi Connect</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+        integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/65ead1a45e.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #eee;
+            height: 100%;
+        }
+
+        .no-border {
+            border: none;
+        }
+
+        .badge-icon {
+            color: #222;
+            background-color: #ddd;
+        }
+
+        .loader {
+            border: 7px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 7px solid #00bbf9;
+            border-bottom: 7px solid #00bbf9;
+            width: 70px;
+            height: 70px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col-md-12">
+                    <div class="card no-border">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <h5 class="card-title ml-3">
+                                        BLUD Cimahi WhatsApp Gateway v1.0 [Broadcast]
+                                        <span id="connected-false" class="badge badge-danger">Not Connected</span>
+                                        <span id="connected-true" class="badge badge-success">Connected</span>
+                                    </h5>
+                                    <p class="card-text">
+                                    <ul>
+                                        <li>Buka WhatsApp di ponsel Anda</li>
+                                        <li>Ketuk <strong>Menu</strong> <span class="badge badge-icon"><i
+                                                    class="fas fa-ellipsis-v fa-1x"></i></span> di pojok kanan atas
+                                            layar (Android) atau Tab <strong>Pengaturan</strong> <span
+                                                class="badge badge-icon"><i class="fas fa-cog fa-1x"></i></span>
+                                            (iPhone) dan pilih <strong>Perangkat Tertaut</strong></li>
+                                        <li>Arahkan ponsel Anda ke layar ini untuk memindai kode</li>
+                                    </ul>
+                                    </p>
+                                    <p class="card-text text-danger ml-4 mt-4 mb-4"><small>* Beberapa versi WhatsApp
+                                            mungkin memiliki cara berbeda untuk mentautkan perangkat</small></p>
+                                </div>
+                                <div class="col-md-3 text-center align-items-center">
+                                    <div class="d-flex h-100">
+                                        <div class="row align-self-center w-100">
+                                            <div class="mx-auto">
+                                                <div id="loader" class="loader"></div>
+                                                <img id="qrcode" src="" alt="" class="img-thumbnail no-border">
+                                                <button id="logout" class="btn btn-outline-danger btn-sm">Logout
+                                                    Session</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+        integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg=="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx"
+        crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        $('#qrcode').hide();
+        $('#logout').hide();
+        $('#loader').show();
+        $('#connected-false').show();
+        $('#connected-true').hide();
+
+        socket.on('qr', function (src) {
+            $('#loader').hide();
+            $('#qrcode').attr('src', src);
+            $('#qrcode').show();
+            $('#logout').hide();
+        });
+
+        socket.on('ready', function (data) {
+            $('#qrcode').hide();
+            $('#loader').hide();
+            $('#logout').show();
+            $('#connected-false').hide();
+            $('#connected-true').show();
+        });
+
+        $('#logout').click(function () {
+            $.get('/logout');
+            $('#logout').hide();
+            $('#loader').show();
+            $('#connected-false').show();
+            $('#connected-true').hide();
+        });
+    </script>
+</body>
+
+</html>
