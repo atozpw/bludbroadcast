@@ -53,8 +53,8 @@ const connection = async () => {
 
 const updateAck = async (from, ack) => {
     const db = await connection();
-    const query = "UPDATE `wa_broadcasts` SET `ack` = ?, `updated_at` = NOW() WHERE `number` = ? AND `ack` < 9 AND `is_sent` > 0 AND `created_at` > SUBTIME(NOW(), '24:0:0')";
-    await db.execute(query, [ack, from]);
+    const query = "UPDATE `wa_broadcasts` SET `ack` = ?, `updated_at` = NOW() WHERE `number` = ? AND `ack` < ? AND `is_sent` > 0 AND `sent_at` > SUBTIME(NOW(), '24:0:0')";
+    await db.execute(query, [ack, from, ack]);
     await db.end();
 };
 
