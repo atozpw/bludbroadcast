@@ -58,6 +58,8 @@ const updateAck = async (from, ack) => {
     await db.end();
 };
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
 client.on("ready", () => {
     if (!fs.existsSync(`./${CLIENT_ID}.json`)) {
         fs.writeFile(`./${CLIENT_ID}.json`, JSON.stringify(client.info), function (err) {
@@ -68,6 +70,14 @@ client.on("ready", () => {
 });
 
 client.on("message", async (message) => {
+    if (message.body === 'ping') {
+        const chat = await message.getChat();
+        chat.sendStateTyping();
+        await sleep(3000);
+        chat.clearState();
+        client.sendMessage(message.from, 'pong');
+    }
+
     console.log(message);
 });
 
